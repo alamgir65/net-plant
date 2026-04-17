@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
 import { useForm } from 'react-hook-form'
 import { imageUpload } from '../../utils'
+import axios from 'axios'
 
 const SignUp = () => {
   const { createUser, updateUserProfile, signInWithGoogle, loading } = useAuth()
@@ -12,46 +13,73 @@ const SignUp = () => {
   const location = useLocation()
   const from = location.state || '/'
 
-  // React Hook Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
 
-  console.log(errors)
   const onSubmit = async data => {
-    const { name, image, email, password } = data
-    const imageFile = image[0]
-    // const formData = new FormData()
-    // formData.append('image', imageFile)
+    const {name, email, password, image} = data;
+
+    const imageFile = image[0];
 
     try {
-      // const { data } = await axios.post(
-      //   `https://api.imgbb.com/1/upload?key=${
-      //     import.meta.env.VITE_IMGBB_API_KEY
-      //   }`,
-      //   formData
-      // )
-      const imageURL = await imageUpload(imageFile)
-
+      
       //1. User Registration
       const result = await createUser(email, password)
-
+      
       // 2. Generate image url from selected file
-
+      const imageURL = imageUpload(imageFile);
+    
       //3. Save username & profile photo
-      await updateUserProfile(name, imageURL)
+      await updateUserProfile(
+        name,
+        imageURL
+      )
 
       navigate(from, { replace: true })
       toast.success('Signup Successful')
-
-      console.log(result)
     } catch (err) {
       console.log(err)
       toast.error(err?.message)
     }
   }
+
+
+  // const onSubmit = async data => {
+  //   // console.log(data);
+  //   const { name, image, email, password } = data
+  //   const imageFile = image[0]
+  //   // const formData = new FormData()
+  //   // formData.append('image', imageFile)
+
+  //   try {
+  //     // const { data } = await axios.post(
+  //     //   `https://api.imgbb.com/1/upload?key=${
+  //     //     import.meta.env.VITE_IMGBB_API_KEY
+  //     //   }`,
+  //     //   formData
+  //     // )
+  //     const imageURL = await imageUpload(imageFile)
+
+  //     //1. User Registration
+  //     const result = await createUser(email, password)
+
+  //     // 2. Generate image url from selected file
+
+  //     //3. Save username & profile photo
+  //     await updateUserProfile(name, imageURL)
+
+  //     navigate(from, { replace: true })
+  //     toast.success('Signup Successful')
+
+  //     console.log(result)
+  //   } catch (err) {
+  //     console.log(err)
+  //     toast.error(err?.message)
+  //   }
+  // }
   // form submit handler
   // const handleSubmit = async event => {
   //   event.preventDefault()
@@ -117,13 +145,11 @@ const SignUp = () => {
                 placeholder='Enter Your Name Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
-                {...register('name', {
-                  required: 'Name is required',
-                  maxLength: {
-                    value: 20,
-                    message: 'Name cannot be too long',
-                  },
-                })}
+                {
+                  ...register('name',{required:true, message:'Name is required', maxLength: {
+                    value: 50,
+                    message: 'Name cannot exceed 50 characters',}})
+                }
               />
               {errors.name && (
                 <p className='text-red-500 text-xs mt-1'>
