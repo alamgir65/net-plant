@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 
-const Card = () => {
+const Card = ({plant}) => {
+  console.log(plant);
   return (
     <Link
       to={`/plant/1`}
@@ -35,7 +36,7 @@ const Card = () => {
             '
           ></div>
         </div>
-        <div className='font-semibold text-lg'>Money Plant</div>
+        <div className='font-semibold text-lg'>{plant?.description}</div>
         <div className='font-semibold text-lg'>Category: Indoor</div>
         <div className='font-semibold text-lg'>Quantity: 10</div>
         <div className='flex flex-row items-center gap-1'>

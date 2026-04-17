@@ -1,5 +1,4 @@
 import { useForm } from 'react-hook-form'
-import { imageUpload } from '../../utils'
 import useAuth from '../../hooks/useAuth'
 import axios from 'axios'
 import { useMutation } from '@tanstack/react-query'
@@ -7,9 +6,11 @@ import LoadingSpinner from '../Shared/LoadingSpinner'
 import ErrorPage from '../../pages/ErrorPage'
 import toast from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
+import {imageUpload} from '../../utils'
 
 const AddPlantForm = () => {
   const { user } = useAuth()
+
 
   // useMutation hook useCase (POST || PUT || PATCH || DELETE)
   const {
@@ -42,6 +43,7 @@ const AddPlantForm = () => {
   })
 
   // React Hook Form
+  
   const {
     register,
     handleSubmit,
@@ -54,7 +56,7 @@ const AddPlantForm = () => {
     const imageFile = image[0]
 
     try {
-      const imageUrl = await imageUpload(imageFile)
+      const imageUrl = await imageUpload(imageFile);
       const plantData = {
         image: imageUrl,
         name,
@@ -68,14 +70,13 @@ const AddPlantForm = () => {
           email: user?.email,
         },
       }
-      // await axios.post(`${import.meta.env.VITE_API_URL}/plants`, plantData),
-      await mutateAsync(plantData)
+      await mutateAsync(plantData);
+      console.log(data);
       reset()
     } catch (err) {
       console.log(err)
     }
   }
-
   if (isPending) return <LoadingSpinner />
   if (isError) return <ErrorPage />
   return (

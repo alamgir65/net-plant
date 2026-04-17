@@ -4,6 +4,7 @@ import LoadingSpinner from '../../components/Shared/LoadingSpinner'
 import useAuth from '../../hooks/useAuth'
 import { FcGoogle } from 'react-icons/fc'
 import { TbFidgetSpinner } from 'react-icons/tb'
+import { useForm } from 'react-hook-form'
 
 const Login = () => {
   const { signIn, signInWithGoogle, loading, user, setLoading } = useAuth()
@@ -15,12 +16,18 @@ const Login = () => {
   if (loading) return <LoadingSpinner />
   if (user) return <Navigate to={from} replace={true} />
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
+
+
+
   // form submit handler
-  const handleSubmit = async event => {
-    event.preventDefault()
-    const form = event.target
-    const email = form.email.value
-    const password = form.password.value
+  const onSubmit = async data => {
+    
+    const { email, password } = data
 
     try {
       //User Login
@@ -58,7 +65,7 @@ const Login = () => {
         </div>
         {/* Login Form */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate=''
           action=''
           className='space-y-6 ng-untouched ng-pristine ng-valid'
@@ -70,13 +77,17 @@ const Login = () => {
               </label>
               <input
                 type='email'
-                name='email'
                 id='email'
-                required
                 placeholder='Enter Your Email Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
+                {...register('email', {required: true, message:'Email is required'})}
               />
+              {errors?.email && (
+                <p className='text-red-500 text-xs mt-1'>
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div>
               <div className='flex justify-between'>
@@ -86,13 +97,17 @@ const Login = () => {
               </div>
               <input
                 type='password'
-                name='password'
                 autoComplete='current-password'
                 id='password'
-                required
                 placeholder='*******'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
+                {...register('password', {required: true, message:'Password is required'})}
               />
+              {errors.password && (
+                <p className='text-red-500 text-xs mt-1'>
+                  {errors.name.password}
+                </p>
+              )}
             </div>
           </div>
 
