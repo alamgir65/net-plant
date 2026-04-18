@@ -6,7 +6,7 @@ import LoadingSpinner from '../Shared/LoadingSpinner'
 import ErrorPage from '../../pages/ErrorPage'
 import toast from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
-import {imageUpload} from '../../utils'
+import {imageUpload, imageUploadByCloudinary} from '../../utils'
 
 const AddPlantForm = () => {
   const { user } = useAuth()

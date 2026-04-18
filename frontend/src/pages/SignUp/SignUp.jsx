@@ -4,7 +4,7 @@ import useAuth from '../../hooks/useAuth'
 import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
 import { useForm } from 'react-hook-form'
-import { imageUpload } from '../../utils'
+import { imageUpload, imageUploadByCloudinary } from '../../utils'
 import axios from 'axios'
 
 const SignUp = () => {
@@ -23,11 +23,14 @@ const SignUp = () => {
     const {name, email, password, image} = data;
 
     const imageFile = image[0];
+    // const cloudinary_image = imageUploadByCloudinary(imageFile);
+    // console.log(cloudinary_image);
 
     try {
       
       //1. User Registration
       const result = await createUser(email, password)
+      console.log(result)
       
       // 2. Generate image url from selected file
       const imageURL = imageUpload(imageFile);
