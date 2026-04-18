@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 const admin = require('firebase-admin')
 const port = process.env.PORT || 3000
@@ -75,6 +76,13 @@ async function run() {
       const result = await plantsCollection.findOne({_id: new ObjectId(id)});
       res.send(result)
     })
+
+    // payment all apis
+    app.post('/create-checkout-session', async(req,res) => {
+      const paymentInfo = req.body;
+      console.log(paymentInfo);
+    })
+    
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })

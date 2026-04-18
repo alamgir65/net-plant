@@ -1,8 +1,33 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+import axios from 'axios';
+import useAuth from '../../hooks/useAuth';
 
 const PurchaseModal = ({ closeModal, isOpen , plant}) => {
-  const {name, description, price,quantity, category, seller, image} = plant;
+  const {name,_id, description, price,quantity, category, seller, image} = plant || {};
   // Total Price Calculation
+  const {user} = useAuth();
+
+
+  const handleSubmit = async() => {
+    console.log('Button clicked');
+    const paymentInfo = {
+      plantId: _id,
+      name,
+      description,
+      price,
+      category,
+      image,
+      seller,
+      customer: {
+        name: user?.displayName,
+        email: user?.email,
+        image: user?.photoURL
+      },
+      quantity: 1
+    };
+
+    const result = await axios.post(`${import.meta.env.VITE_API_URL}/create-checkout-session`, paymentInfo);
+  }
 
   return (
     <Dialog
@@ -43,6 +68,7 @@ const PurchaseModal = ({ closeModal, isOpen , plant}) => {
               <button
                 type='button'
                 className='cursor-pointer inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2'
+                onClick={handleSubmit}
               >
                 Pay
               </button>
