@@ -166,6 +166,20 @@ async function run() {
       res.send(orders);
     })
 
+    app.delete('/delete-order/:id', async(req,res) => {
+      const id = req.params.id;
+      const order = await ordersCollection.findOne({_id: new ObjectId(id)});
+      if(order){
+        const result = await ordersCollection.deleteOne({_id: new ObjectId(id)});
+        // update the quantity of the plant in db
+        const plant = await plantsCollection.findOne({_id: new ObjectId(order?.plantId)});
+        const updatedQuantity = plant?.quantity + 1;
+        await plantsCollection.updateOne({_id: new ObjectId(order?.plantId)}, {$set: {quantity: updatedQuantity}});
+        return res.send(result);
+      }
+      return res.status(404).send({message: 'Order not found'})
+    })
+
     app.get('/manage-orders/:seller_email', async(req,res) => {
       const seller_email = req.params.seller_email;
       const orders = await ordersCollection.find({seller_email}).toArray();

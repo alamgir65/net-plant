@@ -1,6 +1,20 @@
+import { useQuery } from '@tanstack/react-query';
 import SellerOrderDataRow from '../../../components/Dashboard/TableRows/SellerOrderDataRow'
+import useAuth from '../../../hooks/useAuth';
+import axios from 'axios';
 
 const ManageOrders = () => {
+  const {user} = useAuth();
+  const {data : orders=[], isLoading, isError} = useQuery({
+    queryKey: ['orders',user?.email],
+    queryFn: async()  => {
+      const {data} = await axios.get(`${import.meta.env.VITE_API_URL}/manage-orders/${user?.email}`);
+      return data;
+    }
+  })
+
+  console.log(orders);
+
   return (
     <>
       <div className='container mx-auto px-4 sm:px-8'>
@@ -56,7 +70,9 @@ const ManageOrders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <SellerOrderDataRow />
+                  {
+                    orders.map(order => <SellerOrderDataRow order={order}/>)
+                  }
                 </tbody>
               </table>
             </div>

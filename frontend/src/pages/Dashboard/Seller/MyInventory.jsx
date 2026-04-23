@@ -1,6 +1,21 @@
+import axios from 'axios';
 import PlantDataRow from '../../../components/Dashboard/TableRows/PlantDataRow'
+import useAuth from '../../../hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
 
 const MyInventory = () => {
+  const {user} = useAuth();
+
+  const {data : plants=[], isLoading, isError} = useQuery({
+    queryKey: ['plants',user?.email],
+    queryFn: async()  => {
+      const {data} = await axios.get(`${import.meta.env.VITE_API_URL}/my-inventory/${user?.email}`);
+      return data;
+    }
+  })
+
+  // console.log(plants);
+
   return (
     <>
       <div className='container mx-auto px-4 sm:px-8'>
@@ -56,7 +71,10 @@ const MyInventory = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <PlantDataRow />
+                  {
+                    plants.map(plant => <PlantDataRow plant={plant}></PlantDataRow>)
+                  }
+                  {/* <PlantDataRow /> */}
                 </tbody>
               </table>
             </div>

@@ -1,19 +1,11 @@
 import { useState } from 'react'
 import DeleteModal from '../../Modal/DeleteModal'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 const CustomerOrderDataRow = ({order}) => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
 
-  const {data: plant={},isLoading} = useQuery({
-    queryKey: ['plant',order?.plantId],
-    queryFn: async() => {
-      const {data} = await axios.get(`${import.meta.env.VITE_API_URL}/plant/${order?.plantId}`);
-      return data;
-    }
-  })
-  console.log('Plant ', plant);
+  const {plant_image,plant_name, category, quantity, status,price,_id} = order || {};
+
 
   return (
     <tr>
@@ -23,8 +15,8 @@ const CustomerOrderDataRow = ({order}) => {
             <div className='block relative'>
               <img
                 alt='profile'
-                src='https://i.ibb.co.com/rMHmQP2/money-plant-in-feng-shui-brings-luck.jpg'
-                className='mx-auto object-cover rounded h-10 w-15 '
+                src={plant_image}
+                width={40}
               />
             </div>
           </div>
@@ -32,19 +24,19 @@ const CustomerOrderDataRow = ({order}) => {
       </td>
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>{plant?.name}</p>
+        <p className='text-gray-900'>{plant_name}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>{plant?.category}</p>
+        <p className='text-gray-900'>{category}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>${plant?.price}</p>
+        <p className='text-gray-900'>${price}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>{order?.quantity}</p>
+        <p className='text-gray-900'>{quantity}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>{order?.status}</p>
+        <p className='text-gray-900'>{status}</p>
       </td>
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
@@ -56,7 +48,7 @@ const CustomerOrderDataRow = ({order}) => {
           <span className='relative cursor-pointer'>Cancel</span>
         </button>
 
-        <DeleteModal isOpen={isOpen} closeModal={closeModal} />
+        <DeleteModal isOpen={isOpen} orderId={_id} closeModal={closeModal} />
       </td>
     </tr>
   )
