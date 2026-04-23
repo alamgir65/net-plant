@@ -1,8 +1,19 @@
 import { useState } from 'react'
 import DeleteModal from '../../Modal/DeleteModal'
-const CustomerOrderDataRow = () => {
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+const CustomerOrderDataRow = ({order}) => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
+
+  const {data: plant={},isLoading} = useQuery({
+    queryKey: ['plant',order?.plantId],
+    queryFn: async() => {
+      const {data} = await axios.get(`${import.meta.env.VITE_API_URL}/plant/${order?.plantId}`);
+      return data;
+    }
+  })
+  console.log('Plant ', plant);
 
   return (
     <tr>
@@ -21,19 +32,19 @@ const CustomerOrderDataRow = () => {
       </td>
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>Money Plant</p>
+        <p className='text-gray-900'>{plant?.name}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>Indoor</p>
+        <p className='text-gray-900'>{plant?.category}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>$120</p>
+        <p className='text-gray-900'>${plant?.price}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>5</p>
+        <p className='text-gray-900'>{order?.quantity}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900'>Pending</p>
+        <p className='text-gray-900'>{order?.status}</p>
       </td>
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>

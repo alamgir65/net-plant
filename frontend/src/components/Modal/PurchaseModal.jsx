@@ -19,9 +19,9 @@ const PurchaseModal = ({ closeModal, isOpen , plant}) => {
       image,
       seller,
       customer: {
-        name: user?.displayName,
-        email: user?.email,
-        image: user?.photoURL
+        name : user?.displayName,
+        email : user?.email,
+        image : user?.photoURL,
       },
       quantity: 1
     };

@@ -79,7 +79,8 @@ async function run() {
     // payment all apis
     app.post('/create-checkout-session', async(req,res) => {
       const paymentInfo = req.body
-      console.log(paymentInfo)
+      console.log("from create-checkout-session : ", paymentInfo)
+
       const session = await stripe.checkout.sessions.create({
           line_items: [
           {
@@ -97,10 +98,10 @@ async function run() {
           },
         ],
         mode: 'payment',
-        cutomer_email: paymentInfo?.email,
+        customer_email: paymentInfo?.customer?.email,
         metadata: {
           plantId: paymentInfo?.plantId,
-          customer: "test@gmail.com"
+          customer: paymentInfo?.customer?.email
         },
         success_url: `${process.env.CLIENT_DOMAIN_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.CLIENT_DOMAIN_URL}/plant/${paymentInfo?.plantId}`
@@ -114,7 +115,7 @@ async function run() {
     app.post('/payment-success', async(req,res) => {
       const {session_id} = req.body;
       const session = await stripe.checkout.sessions.retrieve(session_id);
-      // console.log(session);
+      console.log("from payment-success : ",session);
       const plant = await plantsCollection.findOne({_id: new ObjectId(session?.metadata?.plantId)});
 
       if(session?.status === 'complete' && plant){
@@ -157,6 +158,25 @@ async function run() {
       return res.status(400).send({message: 'Payment not successful or plant not found'})
     })
     
+    // my orders api
+    app.get('/my-orders/:email', async(req,res) => {
+      const email = req.params.email;
+      console.log('from my-orders : ', email);
+      const orders = await ordersCollection.find({customer_email: email}).toArray();
+      res.send(orders);
+    })
+
+    app.get('/manage-orders/:seller_email', async(req,res) => {
+      const seller_email = req.params.seller_email;
+      const orders = await ordersCollection.find({seller_email}).toArray();
+      res.send(orders);
+    })
+
+    app.get('/my-inventory/:email', async(req, res) => {
+      const email = req.params.email;
+      const plants = await plantsCollection.find({ 'seller.email': email }).toArray();
+      res.send(plants);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
