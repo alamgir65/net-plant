@@ -6,7 +6,10 @@ const CustomerOrderDataRow = ({order}) => {
 
   const {plant_image,plant_name, category, quantity, status,price,_id} = order || {};
 
-
+  const handleOrderCancel = () => {
+    console.log('button clicked')
+    setIsOpen(true)
+  }
   return (
     <tr>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
@@ -41,7 +44,7 @@ const CustomerOrderDataRow = ({order}) => {
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => handleOrderCancel()}
           className='relative disabled:cursor-not-allowed cursor-pointer inline-block px-3 py-1 font-semibold text-lime-900 leading-tight'
         >
           <span className='absolute cursor-pointer inset-0 bg-red-200 opacity-50 rounded-full'></span>

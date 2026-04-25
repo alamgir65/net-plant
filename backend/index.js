@@ -55,6 +55,7 @@ async function run() {
     const db = client.db('plantsDB')
     const plantsCollection = db.collection('plants')
     const ordersCollection = db.collection('orders')
+    const usersCollection = db.collection('users')
 
     // Save a plant data in db
     app.post('/plants', async (req, res) => {
@@ -190,6 +191,26 @@ async function run() {
       const email = req.params.email;
       const plants = await plantsCollection.find({ 'seller.email': email }).toArray();
       res.send(plants);
+    })
+
+
+    // save or update a user in db
+    app.post('/user', async(req,res) => {
+      const userData = req.body;
+      userData.created_at = new Date()
+      userData.updated_at = new Date()
+      console.log('from save or update user api : ', userData);
+      const query = {email : userData?.email};
+      const userExist = await usersCollection.findOne(query);
+
+      if(userExist){
+        console.log('user already exist, updating the data');
+        const updateUser = await usersCollection.updateOne(query, {$set: {updated_at: new Date()}});
+        return res.send(updateUser);
+      }
+
+      const result = await usersCollection.insertOne(userData);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
